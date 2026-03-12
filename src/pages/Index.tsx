@@ -1,12 +1,41 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useState } from "react";
+import TrackerNavbar from "@/components/TrackerNavbar";
+import LoginPage from "@/pages/LoginPage";
+import RegisterPage from "@/pages/RegisterPage";
+import DashboardPage from "@/pages/DashboardPage";
+import { useAuth } from "@/hooks/useAuth";
+import { useDarkMode } from "@/hooks/useDarkMode";
 
 const Index = () => {
+  const { user, login, register, logout } = useAuth();
+  const { dark, toggle } = useDarkMode();
+  const [page, setPage] = useState<"login" | "register">("login");
+
+  if (!user) {
+    return (
+      <>
+        <TrackerNavbar dark={dark} onToggleDark={toggle} />
+        {page === "login" ? (
+          <LoginPage onLogin={login} onGoRegister={() => setPage("register")} />
+        ) : (
+          <RegisterPage onRegister={register} onGoLogin={() => setPage("login")} />
+        )}
+        <footer className="text-center py-4 text-xs text-muted-foreground">
+          © 2026 Mobile Location Tracker
+        </footer>
+      </>
+    );
+  }
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
-      </div>
+    <div className="min-h-screen flex flex-col">
+      <TrackerNavbar dark={dark} onToggleDark={toggle} userName={user.name} onLogout={logout} />
+      <main className="flex-1">
+        <DashboardPage />
+      </main>
+      <footer className="text-center py-4 text-xs text-muted-foreground border-t border-border">
+        © 2026 Mobile Location Tracker
+      </footer>
     </div>
   );
 };
